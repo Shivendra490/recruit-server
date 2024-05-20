@@ -1,7 +1,7 @@
 const User = require("../models/user");
-
+const dotenv=require("dotenv").config()
 const bcrypt = require("bcrypt");
-const jwt=require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
 exports.signUp = async (req, res, next) => {
   try {
@@ -12,18 +12,16 @@ exports.signUp = async (req, res, next) => {
       !password?.trim() ||
       !mobile?.trim()
     ) {
-      const error = new Error("All field are required");
-      error.statusCode = 422;
-      throw error;
+      return res.status(422).json({ message: "Please fill all fields" });
     }
 
-    const isUserExist = await User.findOne({ email: email });
+    const isUserExist = await User.findOne({ email: email.toLowerCase() });
     if (isUserExist) {
       return res.json({ message: "user is already registered" });
     }
     const hashedPwd = await bcrypt.hash(password, 12);
     const newUser = await User.create({
-      email,
+      email:email.toLowerCase(),
       name,
       password: hashedPwd,
       mobile,
@@ -34,9 +32,6 @@ exports.signUp = async (req, res, next) => {
       user: { email: newUser.email, _id: newUser._id, name: newUser.name },
     });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
     next(err);
   }
 };
@@ -46,28 +41,30 @@ exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email?.trim() || !password?.trim()) {
-      const error = new Error("All field are required");
-      error.statusCode = 422;
-      throw error;
+      return res.status(422).json({ message: "Please fill all fields" });
     }
-    const user=await User.findOne({email})
-    if(!user){
-      const error = new Error("Credentials are invalid");
-      error.statusCode = 401;
-      throw error;
+    const user = await User.findOne({ email:email.toLowerCase() });
+    if (!user) {
+      return res.status(404).json({ message: "User does not exist" });
     }
-    const isEqual=await bcrypt.compare(password,user.password)
-    if(!isEqual){
-      const error = new Error("Credentials are invalid,unauthorized access");
-      error.statusCode = 401;
-      throw error;
+    const isEqual = await bcrypt.compare(password, user.password);
+    if (!isEqual) {
+      return res
+        .status(403)
+        .json({ message: "Credentials are invalid, Authentication failed" });
     }
-    const token=jwt.sign({email:user.email,userId:user._id.toString()},'supersecretkey',{expiresIn:'1h'})
-    res.status(200).json({message:"login successful",token:token,userId:user._id,email:user.email})
+    const token = jwt.sign(
+      { email: user.email, userId: user._id},
+      process.env.PRIVATE_KEY,
+      { expiresIn: "1h" }
+    );
+    res.status(200).json({
+      message: "login successful",
+      token: token,
+      userId: user._id,
+      email: user.email,
+    });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
     next(err);
   }
 };

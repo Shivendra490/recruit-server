@@ -7,6 +7,7 @@ const bodyParser=require("body-parser")
 dotenv.config();
 
 const authRoutes=require("./routes/auth")
+const jobRoutes=require("./routes/job")
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get("/", (req, res, next) => {
 });
 
 app.use('/api/auth',authRoutes)
+app.use('/api/job',jobRoutes)
 
 app.use((err,req,res,next)=>{
     const status=err.statusCode || 500
