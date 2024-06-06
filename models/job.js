@@ -11,6 +11,10 @@ const jobSchema = new Schema({
     type: String,
     required: true,
   },
+  companyLogo:{
+    type:String,
+    required:true,
+  },
   location: {
     type: String,
     required: true,
@@ -31,9 +35,17 @@ const jobSchema = new Schema({
     type: String,
     required: true,
   },
+  aboutCompany:{
+    type:String,
+    required:true
+  },
   skills: {
     type: [String],
     required: true,
+  },
+  information:{
+    type:String,
+    required:true
   },
   refUserId: {
     type: Schema.Types.ObjectId,
