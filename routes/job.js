@@ -9,7 +9,7 @@ router.post("/create",verifyAuth,jobController.createJob)
 
 router.get("/alljobs",jobController.getAllJobs)
 
-router.put("/update/:jobId",verifyAuth,jobController.updateJob)
+router.patch("/update/:jobId",verifyAuth,jobController.updateJob)
 
 router.get("/:jobId",jobController.getJob)
 

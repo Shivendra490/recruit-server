@@ -30,7 +30,7 @@ exports.createJob = async (req, res, next) => {
     return res.status(422).json({ message: "Please fill all fields" });
   }
 
-  const skillArray = skills.split(",").map((skill) => skill.trim());
+  const skillArray = skills?.split(",").map((skill) => skill.trim());
 
   const newJob = new Job({
     title,
@@ -59,9 +59,9 @@ exports.createJob = async (req, res, next) => {
 exports.getJob = async (req, res, next) => {
   try {
     const jobId = req.params.jobId;
-    console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj", jobId);
+
     const job = await Job.findById(jobId);
-    console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk", job);
+
     if (!job) {
       return res.status(404).json({ message: "No such Job found" });
     }
@@ -113,7 +113,6 @@ exports.updateJob = async (req, res, next) => {
       information,
     } = req.body;
 
-
     const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({ message: "this job does not exist in db" });
@@ -121,7 +120,7 @@ exports.updateJob = async (req, res, next) => {
     const skillArray = skills
       ?.split(",")
       .map((skill) => skill?.trim().toLowerCase());
-      console.log('skillArr',skillArray)
+    console.log("skillArr", skillArray);
     job.title = title || job.title;
     job.companyName = companyName;
     job.location = location || job.companyName;
@@ -135,7 +134,7 @@ exports.updateJob = async (req, res, next) => {
     job.information = information || job.information;
     job.updatedAt = new Date();
     const jb = await job.save();
-    res.status(201).json({ message: "job updated successfully", data: jb });
+    res.status(200).json({ message: "job updated successfully", data: jb });
   } catch (err) {
     next(err);
   }
