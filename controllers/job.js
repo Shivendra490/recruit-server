@@ -73,7 +73,7 @@ exports.getJob = async (req, res, next) => {
 
 exports.getAllJobs = async (req, res, next) => {
   try {
-    const jobId = req.params.jobId;
+    // const jobId = req.params.jobId;
 
     const allJobs = await Job.find().select([
       "title",
@@ -83,7 +83,10 @@ exports.getAllJobs = async (req, res, next) => {
       "jobType",
       "locationType",
       "companyLogo",
-    ]);
+      "refUserId"
+    ]).sort({updatedAt:-1});
+
+   
 
     if (allJobs.length === 0) {
       return res.status(404).json({ message: "No jobs found" });
@@ -91,6 +94,34 @@ exports.getAllJobs = async (req, res, next) => {
     res
       .status(200)
       .json({ message: "All jobs fetch successfully", data: allJobs });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getAllMyJobs = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+
+    const allMyJobs = await Job.find({refUserId:userId}).select([
+      "title",
+      "skills",
+      "salary",
+      "location",
+      "jobType",
+      "locationType",
+      "companyLogo",
+      "refUserId"
+    ]).sort({updatedAt:-1});
+
+   
+
+    if (allMyJobs.length === 0) {
+      return res.status(200).json({ message: "No jobs found",data:allMyJobs });
+    }
+    res
+      .status(200)
+      .json({ message: "All your jobs fetch successfully", data: allMyJobs });
   } catch (err) {
     next(err);
   }
@@ -116,6 +147,10 @@ exports.updateJob = async (req, res, next) => {
     const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({ message: "this job does not exist in db" });
+    }
+    console.log('types',typeof req.userId,req.userId,typeof job.refUserId,job.refUserId)
+    if(req.userId.toString()!==job.refUserId.toString()){
+      return res.status(403).json({ message: "Unauthorized to update this job" });
     }
     const skillArray = skills
       ?.split(",")

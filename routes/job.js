@@ -9,6 +9,9 @@ router.post("/create",verifyAuth,jobController.createJob)
 
 router.get("/alljobs",jobController.getAllJobs)
 
+router.get("/allmyjobs/:userId",verifyAuth,jobController.getAllMyJobs)
+
+
 router.patch("/update/:jobId",verifyAuth,jobController.updateJob)
 
 router.get("/:jobId",jobController.getJob)
