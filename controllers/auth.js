@@ -51,7 +51,7 @@ exports.login = async (req, res, next) => {
     if (!isEqual) {
       return res
         .status(403)
-        .json({ message: "Credentials are invalid, Authentication failed" });
+        .json({ message: "Credentials are invalid." });
     }
     const token = jwt.sign(
       { email: user.email, userId: user._id},

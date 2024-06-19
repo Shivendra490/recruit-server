@@ -89,7 +89,7 @@ exports.getAllJobs = async (req, res, next) => {
    
 
     if (allJobs.length === 0) {
-      return res.status(404).json({ message: "No jobs found" });
+      return res.status(404).json({ message: "No jobs found",data:alljobs});
     }
     res
       .status(200)
@@ -170,6 +170,24 @@ exports.updateJob = async (req, res, next) => {
     job.updatedAt = new Date();
     const jb = await job.save();
     res.status(200).json({ message: "job updated successfully", data: jb });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+exports.deleteJob = async (req, res, next) => {
+  try {
+    const jobId = req.params.jobId;
+
+    const job = await Job.findByIdAndDelete(jobId);
+    console.log('jjjoooobbbb',job)
+
+    if (!job) {
+      return res.status(404).json({ message: "No such Job found" });
+    }
+    res.status(200).json({ message: "Job Delete successfully", data: job });
   } catch (err) {
     next(err);
   }

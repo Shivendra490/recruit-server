@@ -4,7 +4,7 @@ exports.verifyAuth = (req, res, next) => {
   try {
     
     let token = req.headers.authorization;
-    console.log("body", req.body);
+    
     if (!token) {
       res.status(403).status({ message: "Invalid Token" });
     }

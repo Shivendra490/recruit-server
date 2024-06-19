@@ -16,4 +16,6 @@ router.patch("/update/:jobId",verifyAuth,jobController.updateJob)
 
 router.get("/:jobId",jobController.getJob)
 
+router.delete("/:jobId",verifyAuth,jobController.deleteJob)
+
 module.exports=router
